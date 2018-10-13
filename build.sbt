@@ -128,7 +128,7 @@ lazy val noPublish = Seq(
   publishArtifact := false
 )
 
-lazy val core =
+lazy val `fs2-log-core` =
   project.in(file("core"))
     .settings(commonSettings)
     .settings(
