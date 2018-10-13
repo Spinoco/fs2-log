@@ -1,5 +1,5 @@
 # fs2-log
-Simple logging for fs2
+Simple logging facade for fs2
 
 This library provides simple logging facade over standard java logging frameworks so it will be easier and more pleasant to work with. 
 
@@ -18,7 +18,7 @@ Now, you shold just `import spinoco.fs2.log._` and you should be good to go.
 
 ## Logging
 
-Logging is available via `Log` instance that shall be passed along as imlicit to constructs where you need to schedule your logs. 
+Logging is available via `Log` instance that shall be passed along as implicit to constructs where you need to schedule your logs. 
 
 For example 
 
@@ -52,15 +52,15 @@ trait Foo[F[_]] {
 
 ```
 
-This logging statement above will pass to your logger implementation message and also Map("pars" -> "_value_") if the method was invoked with "_value_" as its parameter. 
+This logging statement above will pass to your logger implementation message and also Map("pars" -> "_value_") if the method was invoked with "_value_" as its parameter. Note that this actually captures name of your variable automatically. 
 
 ### LogContext
 
 Each loging statement implicitly looks for `LogContext`. Default logContext is simple string name, which shall resemble to FQDN of the class where the logging statement is present. 
 
-As we do not want always provide it, there is default instance of LogContext implicitly summoned, if none is available that materializes LogContext via macro as FQDN of enclosing class. 
+As we do not want always provide it, there is _default_ instance of `LogContext` implicitly summoned, if none is available that materializes `LogContext` via macro as FQDN of enclosing class. 
 
-There may be custom LogContexts available, that may capture also other type of data (i.e. thread name) and pass them along for logger to use them when writing log statement. 
+There may be custom `LogContext`'s provided, that may capture also other type of data (i.e. thread name) and pass them along for logger to use them when writing log statement. 
 
 ### Capturing source file and line
 
@@ -69,15 +69,15 @@ fs2-log is also with every log statement capturing the actual line in source cod
 
 ### Asynchronous logging and Delayed evaluation
 
-Typically, the logging involves perfroming effects assotiated with File // Stdout or event Networks. Cost of the logging when turned on may not be insignificant and in highly concurrent environemnt may also have an negative impact on perfromance overall. 
+Typically, the logging involves performing effects assotiated with File // stdout or even Networks. Cost of the logging when turned on may not be insignificant and in highly concurrent environemnt may also have an negative impact on performance overall, sometimes even misguiding you where ther problem really is. 
 
-As such, fs2-log allows user to implement asynchornous logging and switche between synchronous / asynchronous logging whenever required. 
+As such, fs2-log allows user to implement asynchronous logging and allows to switch between synchronous / asynchronous logging whenever required. 
 
-`Log.async` construct logger, that allows to log statements asynchronously. Technically this captures timestamp, any variables, statements, strings etc. that shall appear in the log and submits them to the queue for further processing. This guarantees, that there is constant cost of the log operation, and also that eventually long and costly i/o operations does not have impacts on the actual program, while still, there is correct timing captured. 
+`Log.async` construct logger, that allows to log statements asynchronously. Technically this captures timestamp, any variables, statements, strings etc. that shall appear in the log and submits them to the queue for further processing. This guarantees, that there is constant cost of the log operation, and also that eventually long and costly i/o operations does not have impact on the actual program, while still, there is correct timing captured. 
 
 Currently asynchronous operation does not sort incoming events based on data, so the events may come to underlying logger implementation out of order (in millisecond windows).
 
-`Log.sync` in contrast to asynchronous variant construct synchronous logging, and as such all effects are perfromed sequentially. However still, shall the logging be subjecxt of any i/o failure or evaluating lazy captured variables will raise error, all these are captured and logged to stdErr w/o implications to main program. 
+`Log.sync` in contrast to asynchronous variant construct synchronous logging, and as such all effects are performed sequentially. However still, shall the logging be subject of any i/o failure or evaluating lazy captured variables will raise error, all these are captured and logged to stderr w/o implications to main program. 
 
 ### LoggingProvider
 
