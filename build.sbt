@@ -5,12 +5,12 @@ import microsites.ExtraMdFileConfig
 val ReleaseTag = """^release/([\d\.]+a?)$""".r
 
 lazy val contributors = Seq(
-  "pchlupacek" -> "Pavel Chlupáček" 
+  "pchlupacek" -> "Pavel Chlupáček"
 )
 
 lazy val commonSettings = Seq(
   organization := "com.spinoco",
-  scalaVersion := "2.12.6",
+//  scalaVersion := "2.12.6",
   crossScalaVersions := Seq("2.11.8", "2.12.6"),
   scalacOptions ++= Seq(
     "-feature",
@@ -37,6 +37,8 @@ lazy val commonSettings = Seq(
   , libraryDependencies ++= Seq(
     "co.fs2" %% "fs2-core" % "1.0.0"
     , "co.fs2" %% "fs2-io" % "1.0.0"
+    , "com.lihaoyi" %% "sourcecode" % "0.1.5"
+    , "org.scalacheck" %% "scalacheck" % "1.14.0" % "test"
   )
   , addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
 ) ++ testSettings ++ scaladocSettings ++ publishingSettings ++ releaseSettings
