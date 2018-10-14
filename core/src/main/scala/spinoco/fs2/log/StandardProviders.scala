@@ -19,9 +19,10 @@ object StandardProviders {
         level.id <= maxLevel.id
 
 
-      def log(level: Log.Level.Value, context: LogContext, time: Instant, message: String, details: Map[String, String], line: Int, file: String): F[Unit] =
+      def log(level: Log.Level.Value, context: LogContext, time: Instant, message: String, details: Map[String, String], line: Int, file: String, thrown: Option[Throwable]): F[Unit] =
         Sync[F].delay {
           println(s"${timeFormat.format(time)} ${level} ${context.name} ${message} ${details} @ $file:$line")
+          thrown.foreach { _.printStackTrace }
         }
 
     }
@@ -52,10 +53,13 @@ object StandardProviders {
       def shouldLog(level: Log.Level.Value, context: LogContext): Boolean =
         Logger.getLogger(context.name).isLoggable(toJuliLevel(level))
 
-      def log(level: Log.Level.Value, context: LogContext, time: Instant, message: String, details: Map[String, String], line: Int, file: String): F[Unit] =
+      def log(level: Log.Level.Value, context: LogContext, time: Instant, message: String, details: Map[String, String], line: Int, file: String,  thrown: Option[Throwable]): F[Unit] =
         Sync[F].delay {
           def msg =s"$message ${details.map { case (k, v) => s"$k -> $v"}.mkString("(",",",")")} @ ($file:$line)"
-          Logger.getLogger(context.name).log(new java.util.logging.LogRecord(toJuliLevel(level), msg))
+          val record = new java.util.logging.LogRecord(toJuliLevel(level), msg)
+          record.setMillis(time.toEpochMilli)
+          thrown.foreach { record.setThrown }
+          Logger.getLogger(context.name).log(record)
         }
 
     }

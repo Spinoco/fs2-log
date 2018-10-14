@@ -30,9 +30,19 @@ trait LoggerProvider[F[_]] {
     * @param details      Details to log with message
     * @param line         Line of the event
     * @param file         File of the event
+    * @param thrown      Captured exception, if any.
     * @return
     */
-  def log(level: Log.Level.Value, context: LogContext, time: Instant, message: String, details: Map[String, String], line: Int, file: String): F[Unit]
+  def log(
+    level: Log.Level.Value
+    , context: LogContext
+    , time: Instant
+    , message: String
+    , details: Map[String, String]
+    , line: Int
+    , file: String
+    , thrown: Option[Throwable]
+   ): F[Unit]
 
 }
 

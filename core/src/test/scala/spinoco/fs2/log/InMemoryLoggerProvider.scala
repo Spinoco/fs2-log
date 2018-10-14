@@ -25,6 +25,7 @@ object InMemoryLoggerProvider {
     , details: Map[String, String]
     , line: Int
     , file: String
+    , thrown: Option[Throwable]
   )
 
 
@@ -33,8 +34,8 @@ object InMemoryLoggerProvider {
       new InMemoryLoggerProvider[F] {
         def logged: F[Vector[Entry]] = ref.get
         def shouldLog(level: Log.Level.Value, context: LogContext): Boolean = level.id <= maxLevel.id
-        def log(level: Log.Level.Value, context: LogContext, time: Instant, message: String, details: Map[String, String], line: Int, file: String): F[Unit] =
-          ref.update(_ :+ Entry(level, context, time, message, details, line, file))
+        def log(level: Log.Level.Value, context: LogContext, time: Instant, message: String, details: Map[String, String], line: Int, file: String, thrown: Option[Throwable]): F[Unit] =
+          ref.update(_ :+ Entry(level, context, time, message, details, line, file, thrown))
       }
 
     }

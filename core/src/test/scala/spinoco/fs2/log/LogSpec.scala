@@ -25,6 +25,26 @@ object LogSpec extends Properties("LogSpec") {
   }
 
 
+  property("observes") = protect {
+    val logged =
+      InMemoryLoggerProvider.instance[IO](Log.Level.Trace).flatMap { implicit provider =>
+        Log.sync[IO].flatMap { log => Resource.pure(log -> provider) }
+      }.use { case (log, provider) =>
+        def action = IO { 1 }
+        def failure: IO[Int] = IO.raiseError(new Throwable("Boom"))
+
+        log.observeAsInfo("action")(action) >>
+        log.observeAsInfo("action")(failure).attempt >>
+        log.observeRaisedAsError("failure")(failure).attempt >>
+        log.observeRaisedAsError("failure")(action) >>
+        provider.logged
+      }.unsafeRunSync()
+
+    (logged.size ?= 2) &&
+    (logged.map(_.message) ?= Vector("action", "failure"))
+  }
+
+
   property("logs-stream") = protect {
     import spinoco.fs2.log.syntax._
     val logged =

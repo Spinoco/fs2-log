@@ -16,6 +16,7 @@ import spinoco.fs2.log.spi.LoggerProvider
   * @param line       Line where the event happened
   * @param file       File, where the event happened
   * @param ctx        Context of the event (usually logger name)
+  * @param thrown     Thrown exception
   */
 private[log] final case class LogRecord (
   level: Log.Level.Value
@@ -25,12 +26,13 @@ private[log] final case class LogRecord (
   , line: sourcecode.Line
   , file: sourcecode.File
   , ctx: LogContext
+  , thrown: Option[Throwable]
 ) { self =>
 
   def toProvider[F[_] : Sync : LoggerProvider]: F[Unit] =
     Sync[F].handleErrorWith(
       Sync[F].suspend {
-        LoggerProvider[F].log(level, ctx, time, message.value, detail.value.dump, line.value, file.value)
+        LoggerProvider[F].log(level, ctx, time, message.value, detail.value.dump, line.value, file.value, thrown)
       }
     )(err => Sync[F].delay {
       new Throwable(s"Unexpected error while logging record: $self", err)
