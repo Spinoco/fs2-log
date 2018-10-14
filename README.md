@@ -15,6 +15,11 @@ libraryDependencies += "com.spinoco" %% "fs2-log-core" % "0.1.0"
 
 Now, you shold just `import spinoco.fs2.log._` and you should be good to go.
 
+## Dependencies
+
+version  |    scala  |   fs2     | sourcecode      
+---------|-----------|-----------|--------- 
+0.1.0    | 2.11, 2.12|1.0.0      | 0.1.5 
 
 ## Logging
 
