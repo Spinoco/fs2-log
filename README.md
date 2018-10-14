@@ -118,7 +118,7 @@ We will be adding more logging providers along the way. Should you miss yours, p
 
 ### fs2 Stream syntax
 
-Try to `import spinoco.fs2.log.syntax._` that will add to your streams `log` methods, that allows simple bilerplate free logging. 
+Try to `import spinoco.fs2.log.syntax._` that will add to your streams `log` methods, that allows simple boilerplate free logging. 
 
 ```scala
 
