@@ -44,8 +44,14 @@ Apart from logging simple statements you may also dump your local/global variabl
 
 trait Foo[F[_]] {
 
- def myImportandMethod(pars: String)(implicit log: Log[F]): F[Unit] = {
+ def myImportandMethod(pars: String)(implicit log: Log[F]): F[A] = {
   doSomeStuff <* log.info("That was fun", Display(pars)) 
+ }
+ 
+ def myImportandMethodFailing(pars: String)(implicit log: Log[F]): F[A] = {
+   doSomeStuff.handleErrorWith { err =>  
+     log.info("That was fun", Display(pars), Some(err)) *> Sync[F].raiseError(err)
+   }
  }
  
 }
@@ -53,6 +59,28 @@ trait Foo[F[_]] {
 ```
 
 This logging statement above will pass to your logger implementation message and also Map("pars" -> "_value_") if the method was invoked with "_value_" as its parameter. Note that this actually captures name of your variable automatically. 
+
+#### Observing computations
+
+There are variants of log, that allows you to observe any `F` computation. apart providing perhaps nicer syntax, they are slightly more effective than 
+simple `flatMap` approach:
+
+ ```scala 
+ 
+ trait Foo[F[_]] {
+ 
+  def myImportandMethod[A](pars: String)(implicit log: Log[F]): F[A] = {
+    log.observeAsInfo("That was fun", Display(pars))(doSomeStuff)  
+  }
+  
+  def myImportandMethodFailing[A](pars: String)(implicit log: Log[F]): F[A] = {
+    log.observeRaisedAsError("That was not fun", Display(pars))(doSomeStuff)  
+  }
+  
+ }
+ 
+ ```
+
 
 ### LogContext
 
